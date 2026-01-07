@@ -1,99 +1,102 @@
-Multimodal House Price Prediction Using Tabular Data and Satellite Imagery
-Project Overview
+# Multimodal House Price Prediction Using Tabular Data and Satellite Imagery
 
-This project focuses on predicting residential house prices using a multimodal machine learning approach that combines structured tabular data with satellite imagery. Traditional house price prediction models rely mainly on numerical property attributes, which often fail to capture neighborhood-level and environmental factors. To overcome this limitation, satellite images are incorporated to provide additional spatial and contextual information.
+## Project Overview
 
-The project demonstrates how convolutional neural networks (CNNs) can be used to extract meaningful visual features from satellite images and how these features can be fused with tabular data to improve prediction robustness and interpretability.
+This project aims to predict residential house prices using a multimodal machine learning approach that combines structured tabular data with satellite imagery. While tabular features capture intrinsic property characteristics such as size, number of rooms, and construction year, they do not fully represent neighborhood-level factors that influence property value.
 
-Dataset Description
+Satellite images provide additional contextual information such as greenery, road connectivity, surrounding infrastructure, and spatial layout. By integrating both data sources, the model captures both property-level and environment-level signals, resulting in improved robustness and interpretability.
 
-The dataset consists of two components:
+---
 
-Tabular Data:
-Contains house-level attributes such as living area, number of bedrooms, number of bathrooms, construction year, renovation year, and geographic coordinates.
+## Dataset Description
 
-Satellite Images:
-Satellite images are downloaded using latitude and longitude values via the Mapbox Static Images API. These images capture neighborhood characteristics such as greenery, road connectivity, and building density.
+The dataset consists of two complementary components:
 
-The training dataset includes house prices as the target variable, while the test dataset contains only input features.
+- **Tabular Data**  
+  House-level attributes including living area, number of bedrooms, number of bathrooms, construction year, renovation year, and geographic coordinates.
 
-Methodology
+- **Satellite Images**  
+  High-resolution satellite images collected using latitude and longitude coordinates via the Mapbox Static Images API. These images capture neighborhood characteristics such as vegetation cover, building density, and road structure.
 
-The project is implemented in the following stages:
+The training dataset contains house prices as the target variable, while the test dataset contains only input features.
 
-Satellite Image Collection
-Satellite images are downloaded for each house location using the Mapbox API and stored locally for reuse.
+---
 
-Data Preprocessing
-Tabular data is cleaned, irrelevant features are removed, missing values are handled, and numerical features are scaled.
+## Methodology
 
-Baseline Modeling (Tabular Only)
-Multiple regression models are trained using only tabular data to establish baseline performance.
+The overall workflow of the project is summarized below:
 
-Image Feature Extraction
-A pretrained ResNet50 convolutional neural network is used to extract high-level visual features from satellite images.
+1. Satellite image collection using geographic coordinates  
+2. Tabular data preprocessing and feature scaling  
+3. Baseline model training using only tabular data  
+4. Image feature extraction using a pretrained CNN (ResNet50)  
+5. Feature fusion of tabular and image features  
+6. Multimodal model training using XGBoost  
+7. Interpretability analysis using Grad-CAM  
+8. Final prediction and CSV generation  
 
-Feature Fusion
-Tabular features and image features are concatenated to form a multimodal feature representation.
+---
 
-Multimodal Model Training
-An XGBoost regression model is trained on the fused feature set.
+## Exploratory Data Analysis (EDA)
 
-Interpretability
-Grad-CAM visualizations are generated to interpret which regions of satellite images influence the learned visual representations.
+Exploratory Data Analysis is performed to understand the distribution and relationships within the dataset. The house price distribution is right-skewed, indicating the presence of a small number of high-value properties.
 
-Final Prediction
-The trained multimodal model is applied to the test dataset and predictions are exported as a CSV file.
+Scatter plots between house price and numerical attributes such as living area and grade show strong positive correlations. However, significant variance is observed among houses with similar structural characteristics, suggesting the influence of neighborhood-level factors.
 
-Exploratory Data Analysis (EDA)
+Visual inspection of sample satellite images reveals noticeable differences in greenery, road networks, and building density between high-priced and low-priced areas.
 
-Exploratory Data Analysis shows that house prices are right-skewed, with a small number of high-value properties. Scatter plots reveal strong correlations between price and features such as living area and house grade, while also highlighting significant variance among houses with similar structural attributes.
+EDA visualizations and satellite image samples are included in the project notebooks.
 
-Sample satellite images reveal clear visual differences between neighborhoods, including variations in greenery, road density, and surrounding infrastructure. These observations motivate the inclusion of image-based features in the model.
+---
 
-Model Performance Summary
-Tabular Data Only
+## Model Performance Summary
 
-Linear Regression shows limited performance due to linear assumptions.
+### Tabular Data Only
 
-Random Forest improves accuracy by capturing nonlinear relationships.
+Initial experiments are conducted using only tabular data to establish baseline performance.
 
-XGBoost (Best Tabular Model):
+- Linear Regression shows limited performance due to linear assumptions.
+- Random Forest improves accuracy by modeling nonlinear feature interactions.
+- **XGBoost performs best among tabular-only models**.
 
-Validation RMSE ≈ 0.162
+| Model | RMSE | R² Score |
+|------|------|----------|
+| Linear Regression | 0.248 | 0.707 |
+| Random Forest | 0.178 | 0.866 |
+| XGBoost | **0.162** | **0.905** |
 
-R² Score ≈ 0.905
+### Tabular + Satellite Images (Multimodal)
 
-Tabular + Satellite Images (Multimodal)
+The multimodal model combines tabular features with CNN-extracted image features.
 
-XGBoost (Fused Features):
+| Model | MAE | R² Score |
+|------|-----|----------|
+| XGBoost (Fused) | **72,751** | **0.87** |
 
-Mean Absolute Error (MAE) ≈ 72,751
+The multimodal model incorporates visual neighborhood context and provides competitive performance with improved interpretability.
 
-R² Score ≈ 0.87
+---
 
-The multimodal model provides competitive performance and improved interpretability by incorporating neighborhood-level visual context.
+## Interpretability and Visual Insights
 
-Interpretability and Insights
+Grad-CAM visualizations are used to interpret the CNN-based image features. The highlighted regions indicate that the model focuses on neighborhood layout, vegetation, road connectivity, and surrounding open spaces.
 
-Grad-CAM visualizations indicate that the CNN focuses on neighborhood layout, road connectivity, vegetation, and surrounding open spaces when extracting visual features. This confirms that satellite imagery captures meaningful environmental cues that influence house prices.
+These visual insights align with real-world economic intuition, where properties located in greener and well-planned neighborhoods tend to have higher market value.
 
-Repository Structure and File Description
-File Name	Description
-DATA_FETCHER.ipynb	Downloads satellite images using latitude and longitude via the Mapbox Static Images API.
-01_preprocessing (2) (1).ipynb	Cleans and preprocesses tabular housing data.
-02_Model_Training_Baseline (2).ipynb	Trains and evaluates baseline models using only tabular data.
-04_Image_Feature_Extraction.ipynb	Extracts image features using ResNet50 and performs multimodal feature fusion.
-Prediction file download.ipynb	Loads the trained multimodal model and generates test predictions.
-23113075.csv	Final submission file containing predicted house prices.
-README.md	Project documentation and usage instructions.
-Conclusion
+---
 
-This project demonstrates the effectiveness of a multimodal machine learning framework for house price prediction. While tabular features provide strong predictive power, satellite imagery contributes valuable neighborhood-level context and improves interpretability. The approach highlights the potential of combining structured and unstructured data sources for real-world regression problems.
+## Installation and Environment Setup
 
-Author
+### Prerequisites
 
-Enrollment Number: 23113075
-Project Type: Multimodal Machine Learning
-Techniques Used: Regression, CNN Feature Extraction, Feature Fusion, XGBoost
+- Python 3.8 or higher  
+- Jupyter Notebook or JupyterLab  
+
+Name-Jampa Sri Pramodhitha
+enrollment no.- 23113075
+
+
+
+
+
 
